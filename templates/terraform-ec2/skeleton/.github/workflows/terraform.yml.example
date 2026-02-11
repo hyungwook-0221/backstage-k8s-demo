@@ -1,3 +1,15 @@
+# GitHub Actions Terraform CI/CD Workflow (선택사항)
+#
+# 이 파일은 선택사항입니다. GitHub Actions를 사용하고 싶다면:
+# 1. 이 파일을 'terraform.yml'로 이름 변경
+# 2. GitHub Secrets에 AWS 크레덴셜 추가:
+#    - AWS_ACCESS_KEY_ID
+#    - AWS_SECRET_ACCESS_KEY
+#    - AWS_REGION (선택사항)
+# 3. Terraform backend를 S3에서 다른 것으로 변경하거나 유지
+#
+# 로컬에서 Terraform을 실행하는 경우 이 파일은 필요하지 않습니다.
+
 name: 'Terraform CI/CD'
 
 on:

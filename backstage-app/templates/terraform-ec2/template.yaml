@@ -101,9 +101,31 @@ spec:
           description: EC2 인스턴스의 Name 태그
           default: terraform-ec2
 
-    - title: GitHub 저장소 설정
+    - title: AWS 인증 정보
+      description: 로컬에서 Terraform을 실행하기 위한 AWS 크레덴셜
       required:
-        - repoUrl
+        - aws_access_key_id
+        - aws_secret_access_key
+        - s3_bucket
+      properties:
+        aws_access_key_id:
+          title: AWS Access Key ID
+          type: string
+          description: AWS IAM 사용자의 Access Key ID
+          ui:field: Secret
+        aws_secret_access_key:
+          title: AWS Secret Access Key
+          type: string
+          description: AWS IAM 사용자의 Secret Access Key
+          ui:field: Secret
+        s3_bucket:
+          title: Terraform State S3 Bucket
+          type: string
+          description: Terraform state 파일을 저장할 S3 bucket 이름 (미리 생성 필요)
+          default: terraform-state-backstage
+
+    - title: GitHub 저장소 설정 (선택사항)
+      description: 코드를 저장할 GitHub repository (선택사항)
       properties:
         repoUrl:
           title: Repository Location

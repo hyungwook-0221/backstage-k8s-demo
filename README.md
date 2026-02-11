@@ -168,80 +168,132 @@ Backstage UI → GitHub Repo 생성 → GitHub Actions 실행 → Terraform Appl
 
 ## 🎓 Software Template
 
-### AWS EC2 with Terraform
+### AWS EC2 with Terraform - 로컬 실행 방식
 
 이 템플릿으로 다음을 생성할 수 있습니다:
 
-1. **GitHub Repository**
-   - Terraform 인프라 코드
-   - GitHub Actions 워크플로우
-   - 문서화된 README
-
-2. **EC2 Infrastructure**
+1. **Terraform 인프라 코드**
+   - EC2 Instance
    - Security Group (HTTP, HTTPS, SSH)
-   - EC2 Instance with Apache
-   - Elastic IP (옵션)
+   - S3 Backend 설정 (State 관리)
+   - 완전한 문서화
 
-3. **CI/CD Pipeline**
-   - Terraform Plan (PR 시)
-   - Terraform Apply (머지 시)
-   - Terraform Destroy (수동)
+2. **로컬 실행 환경**
+   - AWS 크레덴셜을 템플릿에서 직접 입력
+   - 로컬에서 `terraform apply` 실행
+   - S3에 State 파일 저장 (팀 공유 가능)
 
-### 템플릿 사용 예시
+3. **GitHub Repository (선택사항)**
+   - 코드 버전 관리용
+   - GitHub Actions는 선택사항
 
+### 🎯 템플릿 사용 방법
+
+#### 1단계: Backstage에서 템플릿 실행
+
+Backstage UI → Create → AWS EC2 with Terraform
+
+**입력 정보:**
 ```yaml
-# 입력 파라미터
+# AWS 설정
 프로젝트 이름: demo-ec2
 리전: us-east-1
 인스턴스 타입: t2.micro
 퍼블릭 IP: true
 
-# 출력
-GitHub Repo: https://github.com/org/demo-ec2
-EC2 Public IP: 54.123.45.67
-Web URL: http://54.123.45.67
+# AWS 인증 (중요!)
+AWS Access Key ID: AKIA...
+AWS Secret Access Key: ************
+S3 Bucket: terraform-state-backstage
+
+# GitHub (선택사항)
+Repository: github.com/org/demo-ec2
 ```
 
-### ⚙️ AWS 크레덴셜 설정 (필수)
+#### 2단계: S3 Bucket 생성
 
-템플릿으로 생성된 Repository에서 GitHub Actions가 작동하려면 AWS 자격 증명을 설정해야 합니다.
-
-#### 1. GitHub Repository Secrets 추가
-
-생성된 Repository → `Settings` → `Secrets and variables` → `Actions`
-
-**필수 Secrets:**
-| Name | 설명 | 예시 |
-|------|------|------|
-| `AWS_ACCESS_KEY_ID` | AWS Access Key | `AKIA...` |
-| `AWS_SECRET_ACCESS_KEY` | AWS Secret Key | `wJalrXUtn...` |
-| `AWS_REGION` | AWS 리전 (선택사항) | `us-east-1` |
-
-#### 2. AWS IAM 사용자 생성 방법
+템플릿 실행 전에 S3 bucket을 미리 생성하세요:
 
 ```bash
-# AWS Console에서:
-# 1. IAM → Users → Create user
-# 2. Permissions: AmazonEC2FullAccess (또는 최소 권한)
-# 3. Security credentials → Create access key
-# 4. "Application running outside AWS" 선택
-# 5. 생성된 Access Key를 GitHub Secrets에 추가
+# AWS Console에서 생성하거나
+aws s3api create-bucket \
+  --bucket terraform-state-backstage \
+  --region us-east-1
+
+# 버전 관리 활성화 (권장)
+aws s3api put-bucket-versioning \
+  --bucket terraform-state-backstage \
+  --versioning-configuration Status=Enabled
 ```
 
-#### 3. 배포 확인
+#### 3단계: 생성된 프로젝트에서 Terraform 실행
 
 ```bash
-# Secrets 추가 후:
-# 1. terraform/ 디렉토리 수정하여 커밋
-# 2. Pull Request 생성 → Plan 결과 확인
-# 3. PR 머지 → Apply 자동 실행
-# 4. GitHub Actions 탭에서 실행 상태 확인
+# 생성된 디렉토리로 이동 (또는 GitHub에서 clone)
+cd demo-ec2/terraform
+
+# AWS 크레덴셜 설정 (템플릿에서 입력한 값)
+export AWS_ACCESS_KEY_ID="YOUR_KEY"
+export AWS_SECRET_ACCESS_KEY="YOUR_SECRET"
+
+# Terraform 실행
+terraform init
+terraform plan
+terraform apply
 ```
 
-**⚠️ 보안 주의:**
-- Access Key는 절대 코드에 포함하지 마세요
-- 프로덕션 환경에서는 IAM Role + OIDC 사용 권장
-- 최소 권한 원칙을 적용하세요
+#### 4단계: 배포 완료!
+
+```bash
+# 출력 예시
+instance_public_ip = "54.123.45.67"
+
+# 웹 브라우저에서 접속
+open http://54.123.45.67
+```
+
+---
+
+### ✨ 주요 특징
+
+#### ✅ 크레덴셜 한 번만 입력
+
+- Backstage 템플릿에서 AWS 크레덴셜 입력
+- 로컬에서 환경변수로 사용
+- GitHub Secrets 수동 설정 불필요
+
+#### ✅ State 파일 영구 관리
+
+- S3 Backend 사용
+- 여러 번 실행 가능
+- 팀원과 State 공유 가능
+- 버전 관리 지원
+
+#### ✅ 간단한 워크플로우
+
+```
+Backstage 템플릿 → 코드 생성 → 로컬 terraform apply → AWS EC2 생성
+```
+
+#### ✅ GitHub Actions는 선택사항
+
+- 기본: 로컬 실행
+- 원하면: GitHub Actions 활성화 가능
+
+---
+
+### 🔐 보안 고려사항
+
+**AWS 크레덴셜 보호:**
+- ✅ 템플릿 입력 시 `ui:field: Secret` 사용 (마스킹)
+- ✅ Backstage는 크레덴셜을 저장하지 않음
+- ✅ 로컬 환경변수로만 사용
+- ⚠️ .env 파일은 Git에 커밋하지 마세요
+
+**State 파일 보안:**
+- ✅ S3 bucket 암호화 활성화
+- ✅ S3 bucket 접근 제한 (IAM Policy)
+- ✅ 버전 관리로 히스토리 추적
 
 ## 🔧 커스터마이징
 
