@@ -202,6 +202,47 @@ EC2 Public IP: 54.123.45.67
 Web URL: http://54.123.45.67
 ```
 
+### ⚙️ AWS 크레덴셜 설정 (필수)
+
+템플릿으로 생성된 Repository에서 GitHub Actions가 작동하려면 AWS 자격 증명을 설정해야 합니다.
+
+#### 1. GitHub Repository Secrets 추가
+
+생성된 Repository → `Settings` → `Secrets and variables` → `Actions`
+
+**필수 Secrets:**
+| Name | 설명 | 예시 |
+|------|------|------|
+| `AWS_ACCESS_KEY_ID` | AWS Access Key | `AKIA...` |
+| `AWS_SECRET_ACCESS_KEY` | AWS Secret Key | `wJalrXUtn...` |
+| `AWS_REGION` | AWS 리전 (선택사항) | `us-east-1` |
+
+#### 2. AWS IAM 사용자 생성 방법
+
+```bash
+# AWS Console에서:
+# 1. IAM → Users → Create user
+# 2. Permissions: AmazonEC2FullAccess (또는 최소 권한)
+# 3. Security credentials → Create access key
+# 4. "Application running outside AWS" 선택
+# 5. 생성된 Access Key를 GitHub Secrets에 추가
+```
+
+#### 3. 배포 확인
+
+```bash
+# Secrets 추가 후:
+# 1. terraform/ 디렉토리 수정하여 커밋
+# 2. Pull Request 생성 → Plan 결과 확인
+# 3. PR 머지 → Apply 자동 실행
+# 4. GitHub Actions 탭에서 실행 상태 확인
+```
+
+**⚠️ 보안 주의:**
+- Access Key는 절대 코드에 포함하지 마세요
+- 프로덕션 환경에서는 IAM Role + OIDC 사용 권장
+- 최소 권한 원칙을 적용하세요
+
 ## 🔧 커스터마이징
 
 ### Backstage 설정 변경
