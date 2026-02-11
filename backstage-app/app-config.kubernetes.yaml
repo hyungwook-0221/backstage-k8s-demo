@@ -1,0 +1,65 @@
+app:
+  title: Backstage on Kubernetes
+  baseUrl: http://localhost:30000
+
+organization:
+  name: Demo Organization
+
+backend:
+  baseUrl: http://localhost:30000
+  listen:
+    port: 7007
+  csp:
+    connect-src: ["'self'", 'http:', 'https:']
+  cors:
+    origin: http://localhost:30000
+    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+    credentials: true
+  database:
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+
+auth:
+  providers:
+    guest:
+      dangerouslyAllowOutsideDevelopment: true
+
+catalog:
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
+  rules:
+    - allow: [Component, System, API, Resource, Location, Template]
+  locations:
+    # 로컬 템플릿들
+    - type: file
+      target: /app/templates/terraform-ec2/template.yaml
+      rules:
+        - allow: [Template]
+    # 예제 엔티티들
+    - type: file
+      target: ./examples/entities.yaml
+    - type: file
+      target: ./examples/org.yaml
+      rules:
+        - allow: [User, Group]
+
+scaffolder:
+  defaultAuthor:
+    name: Backstage
+    email: backstage@example.com
+  defaultCommitMessage: 'Initial commit from Backstage'
+
+techdocs:
+  builder: 'local'
+  generator:
+    runIn: 'local'
+  publisher:
+    type: 'local'
+
+permission:
+  enabled: false

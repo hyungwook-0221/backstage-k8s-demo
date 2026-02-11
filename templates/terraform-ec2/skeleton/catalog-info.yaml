@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.name }}
+  description: ${{ values.description }}
+  annotations:
+    github.com/project-slug: ${{ values.destination.owner + "/" + values.destination.repo }}
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - terraform
+    - aws
+    - ec2
+    - infrastructure
+  links:
+    - url: https://console.aws.amazon.com/ec2/
+      title: AWS EC2 Console
+      icon: cloud
+spec:
+  type: infrastructure
+  lifecycle: production
+  owner: ${{ values.owner }}

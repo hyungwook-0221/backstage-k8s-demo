@@ -1,0 +1,157 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: terraform-ec2-template
+  title: AWS EC2 with Terraform and GitHub Actions
+  description: |
+    Terraform 코드와 GitHub Actions를 사용하여 AWS EC2 인스턴스를 프로비저닝하는 템플릿입니다.
+    이 템플릿은 다음을 포함합니다:
+    - EC2 인스턴스 생성을 위한 Terraform 코드
+    - 자동 배포를 위한 GitHub Actions 워크플로우
+    - 기본적인 보안 그룹 설정
+  tags:
+    - terraform
+    - aws
+    - ec2
+    - infrastructure
+    - github-actions
+spec:
+  owner: platform-team
+  type: infrastructure
+
+  parameters:
+    - title: 프로젝트 정보
+      required:
+        - name
+        - owner
+      properties:
+        name:
+          title: 프로젝트 이름
+          type: string
+          description: 생성할 프로젝트의 이름 (GitHub 저장소 이름)
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        description:
+          title: 설명
+          type: string
+          description: 이 인프라의 목적과 설명
+        owner:
+          title: Owner
+          type: string
+          description: 프로젝트 오너
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: [Group, User]
+
+    - title: AWS EC2 설정
+      required:
+        - region
+        - instance_type
+      properties:
+        region:
+          title: AWS 리전
+          type: string
+          description: EC2 인스턴스를 생성할 AWS 리전
+          default: us-east-1
+          enum:
+            - us-east-1
+            - us-west-2
+            - ap-northeast-2
+            - ap-southeast-1
+            - eu-west-1
+          enumNames:
+            - 'US East (N. Virginia)'
+            - 'US West (Oregon)'
+            - 'Asia Pacific (Seoul)'
+            - 'Asia Pacific (Singapore)'
+            - 'Europe (Ireland)'
+        instance_type:
+          title: 인스턴스 타입
+          type: string
+          description: EC2 인스턴스 타입
+          default: t2.micro
+          enum:
+            - t2.micro
+            - t2.small
+            - t2.medium
+            - t3.micro
+            - t3.small
+            - t3.medium
+          enumNames:
+            - 't2.micro (1 vCPU, 1 GiB RAM) - Free Tier'
+            - 't2.small (1 vCPU, 2 GiB RAM)'
+            - 't2.medium (2 vCPU, 4 GiB RAM)'
+            - 't3.micro (2 vCPU, 1 GiB RAM)'
+            - 't3.small (2 vCPU, 2 GiB RAM)'
+            - 't3.medium (2 vCPU, 4 GiB RAM)'
+        ami_id:
+          title: AMI ID (선택사항)
+          type: string
+          description: 사용할 AMI ID (비워두면 최신 Amazon Linux 2023 사용)
+        enable_public_ip:
+          title: 퍼블릭 IP 할당
+          type: boolean
+          description: 인스턴스에 퍼블릭 IP를 할당할지 여부
+          default: true
+        instance_name:
+          title: 인스턴스 이름
+          type: string
+          description: EC2 인스턴스의 Name 태그
+          default: terraform-ec2
+
+    - title: GitHub 저장소 설정
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+            allowedOwners:
+              - your-github-org
+
+  steps:
+    - id: fetch-base
+      name: Fetch Skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+          region: ${{ parameters.region }}
+          instance_type: ${{ parameters.instance_type }}
+          ami_id: ${{ parameters.ami_id }}
+          enable_public_ip: ${{ parameters.enable_public_ip }}
+          instance_name: ${{ parameters.instance_name }}
+
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: ${{ parameters.description }}
+        repoUrl: ${{ parameters.repoUrl }}
+        repoVisibility: private
+        defaultBranch: main
+
+    - id: register
+      name: Register Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
