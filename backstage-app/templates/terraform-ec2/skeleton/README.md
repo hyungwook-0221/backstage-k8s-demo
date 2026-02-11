@@ -23,11 +23,33 @@ GitHub Actions를 통해 자동으로 배포됩니다.
 
 ### 1. AWS 자격 증명 설정
 
-GitHub 저장소의 Secrets에 다음을 추가하세요:
+#### GitHub Secrets 추가 방법:
 
-- `AWS_ACCESS_KEY_ID`: AWS Access Key ID
-- `AWS_SECRET_ACCESS_KEY`: AWS Secret Access Key
-- `AWS_REGION`: AWS 리전 (기본값: ${{ values.region }})
+1. **GitHub Repository 설정으로 이동**
+   - 생성된 Repository로 이동
+   - `Settings` → `Secrets and variables` → `Actions` 클릭
+
+2. **New repository secret 클릭하여 추가:**
+
+   | Secret Name | 설명 | 예시 |
+   |------------|------|------|
+   | `AWS_ACCESS_KEY_ID` | AWS Access Key ID | `AKIA...` |
+   | `AWS_SECRET_ACCESS_KEY` | AWS Secret Access Key | `wJalrXUtn...` |
+   | `AWS_REGION` | AWS 리전 (선택사항) | `${{ values.region }}` |
+
+3. **AWS IAM 사용자 생성 (처음 사용하는 경우)**
+   ```bash
+   # AWS Console에서:
+   # 1. IAM → Users → Create user
+   # 2. Attach policies: AmazonEC2FullAccess (또는 최소 권한 정책)
+   # 3. Security credentials → Create access key
+   # 4. Application running outside AWS 선택
+   # 5. Access Key와 Secret Key를 GitHub Secrets에 추가
+   ```
+
+**⚠️ 보안 주의:**
+- Access Key는 한 번만 표시되므로 안전한 곳에 저장하세요
+- 프로덕션 환경에서는 IAM Role + OIDC 사용을 권장합니다
 
 ### 2. Terraform 배포
 

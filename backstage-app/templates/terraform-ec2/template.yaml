@@ -112,8 +112,7 @@ spec:
           ui:options:
             allowedHosts:
               - github.com
-            allowedOwners:
-              - your-github-org
+            # allowedOwners를 지정하지 않으면 모든 Organization/User 사용 가능
 
   steps:
     - id: fetch-base
