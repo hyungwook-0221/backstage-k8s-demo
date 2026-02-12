@@ -20,10 +20,10 @@
 
 이 프로젝트는 **두 가지 배포 방식**을 지원합니다:
 
-| 배포 환경 | 가이드 문서 | 이미지 소스 | 용도 |
-|----------|------------|------------|------|
-| **🏠 Kind (로컬)** | [SETUP.md](SETUP.md) | 로컬 빌드 (`backstage:local`) | 개발, 테스트, 학습 |
-| **☁️ 일반 K8s** | [SETUP-GENERIC-K8S.md](SETUP-GENERIC-K8S.md) | Docker Hub (`hyungwookhub/backstage:latest`) | 모든 K8s 클러스터 (EKS, AKS, GKE 등) |
+| 배포 환경 | 가이드 문서 | 이미지 소스 | 지원 아키텍처 | 용도 |
+|----------|------------|------------|--------------|------|
+| **🏠 Kind (로컬)** | [SETUP.md](SETUP.md) | 로컬 빌드 (`backstage:local`) | 빌드 환경에 따름 | 개발, 테스트, 학습 |
+| **☁️ 일반 K8s** | [SETUP-GENERIC-K8S.md](SETUP-GENERIC-K8S.md) | Docker Hub (`hyungwookhub/backstage:latest`) | **amd64, arm64** | 모든 K8s 클러스터 (EKS, AKS, GKE 등) |
 
 ---
 
@@ -86,6 +86,9 @@ kubectl get service backstage -n backstage
 👉 **전체 가이드:** [SETUP-GENERIC-K8S.md](SETUP-GENERIC-K8S.md)
 
 👉 **Docker Hub 이미지:** https://hub.docker.com/r/hyungwookhub/backstage
+- **Multi-Architecture:** `linux/amd64`, `linux/arm64`
+- **Intel/AMD 서버:** ✅ 지원
+- **ARM 서버 (Graviton, Apple Silicon):** ✅ 지원
 
 ## 📂 프로젝트 구조
 

@@ -2,6 +2,17 @@
 
 Docker Hub의 공개 이미지를 사용하여 **어떤 Kubernetes 클러스터에서든** Backstage를 배포하는 가이드입니다.
 
+## 🐳 Docker 이미지
+
+**Image:** `hyungwookhub/backstage:latest`
+**Registry:** https://hub.docker.com/r/hyungwookhub/backstage
+
+**지원 아키텍처:**
+- ✅ `linux/amd64` - Intel/AMD x86-64 (대부분의 서버)
+- ✅ `linux/arm64` - ARM64 (AWS Graviton, Apple Silicon, ARM 서버)
+
+**자동 선택:** Docker/Kubernetes가 자동으로 적절한 아키텍처 선택
+
 ## 🎯 대상 환경
 
 이 가이드는 다음과 같은 환경에서 사용할 수 있습니다:

@@ -77,6 +77,25 @@ docker image build . -f packages/backend/Dockerfile --tag backstage:local
 docker images | grep backstage
 ```
 
+**💡 참고: 멀티 아키텍처 빌드 (선택사항)**
+
+다른 아키텍처에서도 사용하려면:
+```bash
+# Buildx로 멀티 아키텍처 빌드 (amd64 + arm64)
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -f packages/backend/Dockerfile \
+  -t backstage:local \
+  --load \
+  .
+```
+
+**참고:**
+- 로컬 Kind 클러스터에서는 현재 아키텍처 이미지만 있으면 됨
+- Docker Hub 공개 이미지는 이미 멀티 아키텍처 지원
+- 자세한 내용: [SETUP-GENERIC-K8S.md](SETUP-GENERIC-K8S.md)
+```
+
 **예상 출력:**
 ```
 backstage   local   abc123def456   2 minutes ago   1.5GB
