@@ -88,6 +88,12 @@ catalog:
       rules:
         - allow: [Template]
 
+    # Terraform EC2 Template
+    - type: file
+      target: ../../templates/terraform-ec2/template.yaml
+      rules:
+        - allow: [Template]
+
     # Local example organizational data
     - type: file
       target: ../../examples/org.yaml
