@@ -133,7 +133,7 @@ spec:
         repoUrl:
           title: Repository Location
           type: string
-          description: 저장소를 생성할 위치 (예: github.com?owner=your-org&repo=repo-name)
+          description: "저장소를 생성할 위치"
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
