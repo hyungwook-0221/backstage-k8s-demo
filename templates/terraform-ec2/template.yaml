@@ -112,12 +112,12 @@ spec:
           title: AWS Access Key ID
           type: string
           description: AWS IAM 사용자의 Access Key ID
-          ui:field: Secret
+          ui:widget: password
         aws_secret_access_key:
           title: AWS Secret Access Key
           type: string
           description: AWS IAM 사용자의 Secret Access Key
-          ui:field: Secret
+          ui:widget: password
         s3_bucket:
           title: Terraform State S3 Bucket
           type: string
@@ -144,7 +144,7 @@ spec:
           description: |
             GitHub 저장소 생성 권한이 있는 Personal Access Token
             필요한 권한: repo (전체), workflow
-          ui:field: Secret
+          ui:widget: password
 
   steps:
     - id: fetch-base
