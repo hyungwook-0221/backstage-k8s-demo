@@ -126,17 +126,18 @@ spec:
 
     - title: GitHub 저장소 설정
       required:
-        - repoUrl
+        - github_owner
+        - github_repo
         - github_token
       properties:
-        repoUrl:
-          title: Repository Location
+        github_owner:
+          title: GitHub Owner
           type: string
-          description: GitHub 저장소 위치 (Host와 Owner, Repository 선택)
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
+          description: GitHub 사용자명 또는 Organization 이름 (예: hyungwook-0221)
+        github_repo:
+          title: Repository Name
+          type: string
+          description: 생성할 저장소 이름 (예: my-terraform-infra)
         github_token:
           title: GitHub Personal Access Token
           type: string
@@ -166,7 +167,7 @@ spec:
       action: publish:github
       input:
         description: ${{ parameters.description }}
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: github.com?owner=${{ parameters.github_owner }}&repo=${{ parameters.github_repo }}
         repoVisibility: private
         defaultBranch: main
         token: ${{ parameters.github_token }}

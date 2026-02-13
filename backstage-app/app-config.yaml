@@ -35,9 +35,7 @@ backend:
 integrations:
   github:
     - host: github.com
-      # RepoUrlPicker가 Organization 목록을 가져오는데 필요
-      # publish:github 액션에서 사용자 입력 token이 있으면 그걸 우선 사용함
-      token: ${GITHUB_TOKEN}
+      # RepoUrlPicker 제거하고 단순 텍스트 입력으로 변경했으므로 integration token 불필요
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
