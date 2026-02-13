@@ -198,19 +198,25 @@ Backstage UI → Create → AWS EC2 with Terraform
 
 **입력 정보:**
 ```yaml
-# AWS 설정
+# 1. 프로젝트 정보
 프로젝트 이름: demo-ec2
-리전: us-east-1
+설명: 데모용 EC2 인스턴스
+Owner: user:default/guest
+
+# 2. AWS EC2 설정
+리전: ap-northeast-2
 인스턴스 타입: t2.micro
 퍼블릭 IP: true
+인스턴스 이름: demo-ec2
 
-# AWS 인증 (중요!)
+# 3. AWS 인증 (중요!)
 AWS Access Key ID: AKIA...
 AWS Secret Access Key: ************
 S3 Bucket: terraform-state-backstage
 
-# GitHub (선택사항)
-Repository: github.com/org/demo-ec2
+# 4. GitHub 저장소 설정 (필수!)
+Repository: github.com?owner=your-org&repo=demo-ec2
+GitHub Token: ghp_****************************  # 각자의 토큰 입력
 ```
 
 #### 2단계: S3 Bucket 생성
@@ -287,16 +293,23 @@ Backstage 템플릿 → 코드 생성 → 로컬 terraform apply → AWS EC2 생
 
 ### 🔐 보안 고려사항
 
-**AWS 크레덴셜 보호:**
-- ✅ 템플릿 입력 시 `ui:field: Secret` 사용 (마스킹)
-- ✅ Backstage는 크레덴셜을 저장하지 않음
-- ✅ 로컬 환경변수로만 사용
-- ⚠️ .env 파일은 Git에 커밋하지 마세요
+**크레덴셜 관리:**
+- ✅ **템플릿 입력**: AWS/GitHub 크레덴셜을 템플릿에서 입력 (`ui:field: Secret`로 마스킹)
+- ✅ **저장하지 않음**: Backstage는 입력받은 크레덴셜을 저장하지 않음
+- ✅ **각자의 계정**: 각 사용자가 자신의 AWS/GitHub 계정 사용
+- ✅ **독립적 실행**: 크레덴셜 공유 불필요
+- ⚠️ `.env` 파일은 Git에 커밋하지 마세요
+
+**환경 변수 (선택사항):**
+- `k8s/04-backstage-secrets.yaml`의 `GITHUB_TOKEN`, `AWS_*` 변수는 **선택사항**
+- 템플릿에서 직접 입력받으므로 비워두어도 됨
+- 카탈로그에서 private repo를 읽을 때만 필요
 
 **State 파일 보안:**
 - ✅ S3 bucket 암호화 활성화
 - ✅ S3 bucket 접근 제한 (IAM Policy)
 - ✅ 버전 관리로 히스토리 추적
+- ✅ 각자의 S3 bucket 사용 (공유 불필요)
 
 ## 🔧 커스터마이징
 
@@ -390,12 +403,43 @@ rm -rf ~/backstage-k8s-demo
 
 ## 🤝 프로젝트 공유하기
 
-### 다른 사람들과 공유하는 방법
+### 다른 사람들이 이 프로젝트를 사용하는 방법
+
+#### 🎯 **완전히 독립적으로 사용 가능!**
+
+이 프로젝트는 **각자의 크레덴셜**로 독립적으로 사용할 수 있도록 설계되었습니다.
+
+**필요한 것:**
+1. ✅ Kubernetes 클러스터 (Kind, EKS, AKS, GKE 등)
+2. ✅ 각자의 AWS 계정 + Access Key
+3. ✅ 각자의 GitHub 계정 + Personal Access Token
+4. ✅ 각자의 S3 Bucket (Terraform State 저장용)
+
+**사용 방법:**
+
+```bash
+# 1. 프로젝트 클론
+git clone https://github.com/YOUR_ORG/backstage-k8s-demo.git
+cd backstage-k8s-demo
+
+# 2. K8s 배포 (2가지 옵션)
+# Option A: Kind (로컬) - SETUP.md 참조
+# Option B: 일반 K8s - SETUP-GENERIC-K8S.md 참조
+
+# 3. Backstage UI에서 템플릿 실행
+# - 각자의 AWS 크레덴셜 입력
+# - 각자의 GitHub Token 입력
+# - 각자의 S3 Bucket 이름 입력
+
+# 4. 생성된 저장소에서 Terraform 실행
+# - 각자의 GitHub 계정에 Repo 생성됨
+# - 각자의 AWS 계정에 EC2 생성됨
+```
 
 #### Option 1: GitHub Repository (권장)
 
 ```bash
-# 1. GitHub에 Repository 생성
+# 1. GitHub에 Public Repository 생성
 # 2. 프로젝트 업로드
 cd ~/backstage-k8s-demo
 git init
@@ -407,7 +451,7 @@ git push -u origin main
 # 3. 다른 사람들이 사용
 git clone https://github.com/YOUR_ORG/backstage-k8s-demo.git
 cd backstage-k8s-demo
-# SETUP.md 가이드 따라하기
+# SETUP.md 또는 SETUP-GENERIC-K8S.md 가이드 따라하기
 ```
 
 #### Option 2: Docker Hub (이미지 공유)

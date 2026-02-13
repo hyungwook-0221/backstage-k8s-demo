@@ -46,6 +46,7 @@ spec:
             secretKeyRef:
               name: backstage-secrets
               key: GITHUB_TOKEN
+              optional: true
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
