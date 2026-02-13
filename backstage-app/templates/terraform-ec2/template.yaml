@@ -134,6 +134,9 @@ spec:
           type: string
           description: GitHub 저장소 위치 (Host와 Owner, Repository 선택)
           ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
         github_token:
           title: GitHub Personal Access Token
           type: string
