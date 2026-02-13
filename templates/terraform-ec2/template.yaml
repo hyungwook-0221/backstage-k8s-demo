@@ -125,23 +125,22 @@ spec:
           default: terraform-state-backstage
 
     - title: GitHub 저장소 설정
-      description: |
-        코드를 저장할 GitHub repository
-        GitHub Personal Access Token이 필요합니다 (필요한 권한: repo, workflow)
       required:
         - repoUrl
+        - github_token
       properties:
         repoUrl:
           title: Repository Location
           type: string
-          description: "저장소를 생성할 위치"
+          description: GitHub 저장소 위치 (Host와 Owner, Repository 선택)
           ui:field: RepoUrlPicker
-          ui:options:
-            requestUserCredentials:
-              secretsKey: USER_OAUTH_TOKEN
-              additionalScopes:
-                github:
-                  - workflow
+        github_token:
+          title: GitHub Personal Access Token
+          type: string
+          description: |
+            GitHub 저장소 생성 권한이 있는 Personal Access Token
+            필요한 권한: repo (전체), workflow
+          ui:field: Secret
 
   steps:
     - id: fetch-base
@@ -167,7 +166,7 @@ spec:
         repoUrl: ${{ parameters.repoUrl }}
         repoVisibility: private
         defaultBranch: main
-        token: ${{ secrets.USER_OAUTH_TOKEN }}
+        token: ${{ parameters.github_token }}
 
     - id: register
       name: Register Component
